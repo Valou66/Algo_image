@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-struct pgm{
-    int height,width,max_value;
-    unsigned char **pixels;
-};//q1
+#include "../include/ex1.h"
 
 struct pgm* pgm_alloc(int hauteur,int largeur,int max_val){
     struct pgm *res=(struct pgm*)malloc(sizeof(struct pgm));
@@ -178,36 +173,4 @@ void pgm_extract(char *fname,struct pgm pgm_t,int dx,int dy,int width,int height
     }
     pgm_write_bin(fname,w);
     pgm_free(w);
-}
-
-
-
-
-
-
-int main(){
-    struct pgm *test1=NULL;
-    test1=pgm_read_asc("eye_s_asc.pgm");
-    pgm_write_asc("test.pgm",test1);
-
-    struct pgm *test2=NULL;
-    test2=pgm_read_bin("eye_s_asc_bin.pgm");
-    pgm_write_bin("test_bin.pgm",test2);
-
-    struct pgm *test3=NULL;
-    pgm_negative(test1,&test3);
-    pgm_write_bin("test_negatif.pgm",test3);
-
-    pgm_extract("test_extract.pgm",*test1,202,210,72,102);
-    
-
-
-    pgm_free(test1);
-    pgm_free(test2);
-    pgm_free(test3);
-    
-
-
-
-    return 0;
 }
