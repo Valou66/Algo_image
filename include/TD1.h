@@ -1,5 +1,5 @@
-#ifndef EX1_H
-#define EX1_H
+#ifndef TD1_H
+#define TD1_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,7 +59,7 @@ void pgm_negative(struct pgm *scr,struct pgm **dst);//q8
     une structure pgm contenant le négatif de l’image source.
 */
 
-void pgm_extract(char *fname,struct pgm pgm_t,int dx,int dy,int width,int height);
+void pgm_extract(char *fname,struct pgm *pgm_t,int dx,int dy,int width,int height);
 /*
     prend en paramètre un pointeur sur une chaine de caractères
     contenant le nom du fichier de sortie (fname), une structure pgm_t, les coordonnées dx et dy
@@ -71,4 +71,4 @@ void pgm_extract(char *fname,struct pgm pgm_t,int dx,int dy,int width,int height
 
 
 
-#endif //EX1_H
+#endif //TD1_H

@@ -1,4 +1,4 @@
-#include "../include/ex1.h"
+#include "../include/TD1.h"
 
 int main(){
     struct pgm *test1=NULL;
@@ -13,7 +13,7 @@ int main(){
     pgm_negative(test1,&test3);
     pgm_write_bin("../obj/test_negatif.pgm",test3);
 
-    pgm_extract("../obj/test_extract.pgm",*test1,202,210,72,102);
+    pgm_extract("../obj/test_extract.pgm",test1,0,0,422,510);
     
     pgm_free(test1);
     pgm_free(test2);

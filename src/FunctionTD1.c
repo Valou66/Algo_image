@@ -1,4 +1,4 @@
-#include "../include/ex1.h"
+#include "../include/TD1.h"
 
 struct pgm* pgm_alloc(int hauteur,int largeur,int max_val){
     struct pgm *res=(struct pgm*)malloc(sizeof(struct pgm));
@@ -17,7 +17,7 @@ struct pgm* pgm_alloc(int hauteur,int largeur,int max_val){
         }
     }
     return res;
-}//q2
+}
 
 void pgm_free(struct pgm *img){
     for(int i=0;i<img->height;i++){
@@ -26,7 +26,7 @@ void pgm_free(struct pgm *img){
     free(img->pixels);
     free(img);
     img=NULL;
-}//q3
+}
 
 struct pgm* pgm_read_asc(char *fname){
     struct pgm *res;
@@ -56,7 +56,7 @@ struct pgm* pgm_read_asc(char *fname){
         fclose(fichier);
     }
     return res;
-}//q4
+}
 
 int pgm_write_asc(char *fname,struct pgm *w){
     int succes=0;
@@ -88,7 +88,7 @@ int pgm_write_asc(char *fname,struct pgm *w){
     }
 
     return succes;
-}//q5
+}
 
 struct pgm * pgm_read_bin(char *fname){
     struct pgm *res=NULL;
@@ -124,8 +124,7 @@ struct pgm * pgm_read_bin(char *fname){
         fclose(fichier);
     }
     return res;
-}//q6
-
+}
 int pgm_write_bin(char *fname,struct pgm *w){
     int succes=0;
 
@@ -153,7 +152,7 @@ int pgm_write_bin(char *fname,struct pgm *w){
 
     return succes;
 
-}//q7
+}
 
 void pgm_negative(struct pgm *scr,struct pgm **dst){
     *dst=pgm_alloc(scr->height,scr->width,scr->max_value);
@@ -164,13 +163,15 @@ void pgm_negative(struct pgm *scr,struct pgm **dst){
     }
 }
 
-void pgm_extract(char *fname,struct pgm pgm_t,int dx,int dy,int width,int height){
-    struct pgm *w=pgm_alloc(height,width,pgm_t.max_value);
+void pgm_extract(char *fname,struct pgm *pgm_t,int dx,int dy,int width,int height){
+    struct pgm *w=pgm_alloc(height,width,pgm_t->max_value);
     for(short i=0;i<w->height;i++){
         for(short j=0;j<w->width;j++){
-            w->pixels[i][j]=pgm_t.pixels[dx+i][dy+j];
+            w->pixels[i][j]=pgm_t->pixels[i][j];
         }
     }
-    pgm_write_bin(fname,w);
+
+
+    pgm_write_asc(fname,w);
     pgm_free(w);
 }
