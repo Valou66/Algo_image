@@ -2,7 +2,9 @@
 #include <stdlib.h>
 
 int main(){
-    printf("hello world");
+    int *ptr=NULL;
+    ptr=&ptr;
 
+    printf("%x",*ptr);
     return 0;
 }
