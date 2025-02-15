@@ -518,5 +518,46 @@ void pgm_quantify(double blk[8][8],double Q[8][8]){
 }
 
 void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]){
+    int zigzag_order[64][2] = {
+        {0, 0}, {0, 1}, {1, 0}, {2, 0}, {1, 1}, {0, 2}, {0, 3}, {1, 2},
+        {2, 1}, {3, 0}, {4, 0}, {3, 1}, {2, 2}, {1, 3}, {0, 4}, {0, 5},
+        {1, 4}, {2, 3}, {3, 2}, {4, 1}, {5, 0}, {6, 0}, {5, 1}, {4, 2},
+        {3, 3}, {2, 4}, {1, 5}, {0, 6}, {0, 7}, {1, 6}, {2, 5}, {3, 4},
+        {4, 3}, {5, 2}, {6, 1}, {7, 0}, {7, 1}, {6, 2}, {5, 3}, {4, 4},
+        {3, 5}, {2, 6}, {1, 7}, {2, 7}, {3, 6}, {4, 5}, {5, 4}, {6, 3},
+        {7, 2}, {7, 3}, {6, 4}, {5, 5}, {4, 6}, {3, 7}, {4, 7}, {5, 6},
+        {6, 5}, {7, 4}, {7, 5}, {6, 6}, {5, 7}, {6, 7}, {7, 6}, {7, 7}
+    };
+    short i;
 
+    for(i=0;i<64;i++){
+        zgzg[i]=blk[zigzag_order[i][0]][zigzag_order[i][1]];
+    }
+}
+
+void pgm_rle(FILE *fd,int zgzg[64]){
+    short i=0;
+    short count=0;
+
+    while(i<64){
+        if(zgzg[i]!=0){
+            if(count>=2){
+                fprintf(fd,"@$%d$\n",count);
+            }
+            else if(count >0){
+                fprintf(fd,"%d",0);
+            }
+            count=0;
+            fprintf(fd,"%d\n",zgzg[i]);
+        }
+        else{
+            count++;
+        }
+
+        i++;
+    }
+    if(count>=2)
+        fprintf(fd,"@$%d$\n",count);
+    else if(count >0)
+        fprintf(fd,"%d\n",0);
 }

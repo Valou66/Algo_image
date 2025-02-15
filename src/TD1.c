@@ -66,36 +66,14 @@ void test_ex2(){
 
 void test_ex3(){
     struct pgm *test1=NULL;
+    double res_blk[8][8];
+    int res_zgzg[64];
     test1=pgm_read_asc("../obj/eye_s_asc.pgm");
 
-    double res_blk[8][8];
-
     pgm_extract_blk(test1,res_blk,0,0);
-
-    for(short i = 0;i<8;i++){
-        for(short j = 0;j<8;j++){
-            printf("%lf ",res_blk[i][j]);
-        }
-        printf("\n");
-    }
-
     pgm_dct(res_blk);
-
-    for(short i = 0;i<8;i++){
-        for(short j = 0;j<8;j++){
-            printf("%lf ",res_blk[i][j]);
-        }
-        printf("\n");
-    }
-
     pgm_quantify(res_blk,Q);
-
-    for(short i = 0;i<8;i++){
-        for(short j = 0;j<8;j++){
-            printf("%lf ",res_blk[i][j]);
-        }
-        printf("\n");
-    }
+    pgm_zig_zag_extract(res_blk,res_zgzg);
 
     pgm_free(test1);
 }

@@ -213,4 +213,27 @@ void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]);
     passé en paramètre.
 */
 
+void pgm_rle(FILE *fd,int zgzg[64]);
+/*
+    écrit les entiers contenus dans le tableau zgzg dans le fichier pointé par fd. 
+    On supposera que le flux donné par fd aura été ouvert préalablement. 
+    Chaque entier sera écrit sur une ligne différente et une séquence de n 0 sera
+    codée par @$n$ dès que n >= 2.
+*/
+
+void pgm_to_jpeg(struct pgm *in_pgm,char *fname);
+/*
+    compresse l’image pgm pointée par in_pgm en utilisant l’algorithme de compression JPEG 
+    et qui stocke le résultat dans un fichier dont le nom est donné par fname. Le fichier
+    compressé respectera le format suivant :
+
+    JPEG
+    width height
+    x0
+    x1
+    x2
+    ...
+    ...
+*/
+
 #endif //TD1_H
