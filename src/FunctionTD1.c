@@ -471,5 +471,52 @@ void pgm_extract_blk(struct pgm *inpgm,double blk[8][8],int i,int j){
 }
 
 void pgm_dct(double bloc[8][8]){
+    double copie[8][8];
+    short i,j,x,y;
+
+    double c_i,c_j;
+
+    double somme;
+
+    for(i=0;i<8;i++){
+        for(j=0;j<8;j++){
+            copie[i][j]=bloc[i][j];
+        }
+    }
+
+    for(i=0;i<8;i++){
+        if(i==0)
+            c_i=1.0/sqrtf(2);
+        else
+            c_i=1.0;
+
+        for(j=0;j<8;j++){
+            somme = 0.0;
+            if(j==0)
+                c_j=1.0/sqrtf(2);
+            else
+                c_j=1.0;
+            
+            for(x=0;x<8;x++){
+                for(y=0;y<8;y++){
+                    somme=somme+(copie[x][y]*cos((((2.0*x)+1.0)*i*M_PI)/16.0)*cos((((2.0*y)+1.0)*j*M_PI)/16.0));
+                }
+            }
+            somme=somme*c_i*c_j*(2.0/8.0);
+            bloc[i][j]=somme;
+        }
+    }
+}
+
+void pgm_quantify(double blk[8][8],double Q[8][8]){
+    short i,j;
+    for(i=0;i<8;i++){
+        for(j=0;j<8;j++){
+            blk[i][j]=round(blk[i][j]/Q[i][j]);
+        }
+    }
+}
+
+void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]){
 
 }

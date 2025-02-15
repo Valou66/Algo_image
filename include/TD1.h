@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define M_PI 3.141592653589793
-
 struct pgm{
     int height,width,max_value;
     unsigned char **pixels;
@@ -199,6 +197,20 @@ void pgm_dct(double bloc[8][8]);
 /*
    qui applique la transformée en cosinue discrète bi-dimensionnelle 
    à un tableau bloc de taille 8 × 8. 
+*/
+
+void pgm_quantify(double blk[8][8],double Q[8][8]);
+/*
+    void pgm_quantify(double blk[8][8], double Q[8][8]) quantifie
+    le bloc blk passé en paramètre avec la matrice de quantification Q passée en paramètre.
+*/
+
+void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]);
+/*
+    void pgm_zigzag_extract(double blk[8][8], int zgzg[64]) extrait les 64 nombres contenus 
+    dans le bloc blk de taille 8 × 8 dans l’ordre donné par la figure 1. Les
+    valeurs de blk seront arrondies à l’entier le plus proche avant d’être stockées dans le tableau zgzg
+    passé en paramètre.
 */
 
 #endif //TD1_H
