@@ -12,12 +12,18 @@ int main(){
     struct pgm *test3=NULL;
     pgm_negative(test1,&test3);
     pgm_write_bin("../obj/test_negatif.pgm",test3);
+    pgm_extract("../obj/test_extract.pgm",test1,100,112,288,218);
+    pgm_write_histogram(test1,"../obj/test_hist.pgm");
 
-    pgm_extract("../obj/test_extract.pgm",test1,0,0,422,510);
-    
     pgm_free(test1);
     pgm_free(test2);
     pgm_free(test3);
+
+    struct ppm *ppm1=NULL;
+    ppm1=ppm_read_asc("../obj/eye_s_asc.ppm");
+    ppm_write_asc("../obj/test.ppm",ppm1);
+
+    ppm_free(ppm1);
 
     return 0;
 }
