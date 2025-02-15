@@ -84,11 +84,28 @@ struct pgm * pgm_read_bin(char *fname);
     relatives à l’image contenue dans le fichier fname.
 */
 
+struct ppm * ppm_read_bin(char *fname);
+/*
+    prend en paramètre un pointeur sur une chaine de
+    caractères contenant le nom du fichier au format 
+    BINAIRE à lire (fname) et retourne un pointeur
+    sur une structure ppm contenant les informations 
+    relatives à l’image contenue dans le fichier fname.
+*/
+
 int pgm_write_bin(char *fname,struct pgm *w);
 /*
     prend en paramètre un pointeur sur une chaine de caractères 
     contenant le nom du fichier (fname à écrire (au format BINAIRE) 
     ainsi qu’un pointeur sur une structure pgm. La fonction retourne 
+    un entier égale à 0 si tout s’est bien passé et à 1 sinon.
+*/
+
+int ppm_write_bin(char *fname,struct ppm *w);
+/*
+    prend en paramètre un pointeur sur une chaine de caractères 
+    contenant le nom du fichier (fname à écrire (au format BINAIRE) 
+    ainsi qu’un pointeur sur une structure ppm. La fonction retourne 
     un entier égale à 0 si tout s’est bien passé et à 1 sinon.
 */
 
@@ -99,10 +116,25 @@ void pgm_negative(struct pgm *scr,struct pgm **dst);
     une structure pgm contenant le négatif de l’image source.
 */
 
+void ppm_negative(struct ppm *scr,struct ppm **dst);
+/*
+    prend en paramètre un pointeur scr sur une structure 
+    ppm contenant l’image source et un pointeur dst sur 
+    une structure ppm contenant le négatif de l’image source.
+*/
+
 void pgm_extract(char *fname,struct pgm *pgm_t,int dx,int dy,int width,int height);
 /*
     prend en paramètre un pointeur sur une chaine de caractères
     contenant le nom du fichier de sortie (fname), une structure pgm_t, les coordonnées dx et dy
+    indiquant le point de départ de l’image à extraire et les dimensions de l’image à extraire width et
+    height. La fonction écrira dans le fichier fname une “sous-image” extraite de l’image principale.
+*/
+
+void ppm_extract(char *fname,struct ppm *pgm_t,int dx,int dy,int width,int height);
+/*
+    prend en paramètre un pointeur sur une chaine de caractères
+    contenant le nom du fichier de sortie (fname), une structure ppm_t, les coordonnées dx et dy
     indiquant le point de départ de l’image à extraire et les dimensions de l’image à extraire width et
     height. La fonction écrira dans le fichier fname une “sous-image” extraite de l’image principale.
 */
@@ -115,6 +147,14 @@ short* pgm_get_histogram(struct pgm *in);
     de l’image.
 */
 
+short** ppm_get_histogram(struct ppm *in);
+/*
+    prend en paramètre un pointeur sur une structure
+    ppm et qui retournera un pointeur sur un tableu à 
+    deux dimensions (3,=maxvalue=) contenant les
+    histogrammes des trois composantes RGB des pixels de l’image.
+*/
+
 void pgm_write_histogram(struct pgm *in,char *fname);
 /*
     prend en paramètre un pointeur sur une structure
@@ -125,6 +165,23 @@ void pgm_write_histogram(struct pgm *in,char *fname);
     de l’histogramme correspondant).
 */
 
+void ppm_write_histogram(struct ppm *in,char *fname);
+/*
+    prend en paramètre un pointeur sur une structure
+    ppm, un pointeur sur une chaine de caractère fname. 
+    La fonction devra créer le fichier fname et
+    l’histogramme de l’image sous la forme de quatre colonnes 
+    (la première colonne contiendra les valeurs de 0 à max_value, 
+    les trois colonnes suivantes les données de l’histogramme des trois
+    composantes correspondant).
+*/
+
+void ppm_to_pgm(struct ppm *in,struct pgm **out);
+/*
+    prendra en paramètre un pointeur sur une structure 
+    ppm et un pointeur sur une structure pgm. La fonction 
+    convertira l’image ppm en image pgm.
+*/
 
 
 

@@ -1,6 +1,6 @@
 #include "../include/TD1.h"
 
-int main(){
+void test_ex1(){
     struct pgm *test1=NULL;
     test1=pgm_read_asc("../obj/eye_s_asc.pgm");
     pgm_write_asc("../obj/test.pgm",test1);
@@ -18,12 +18,45 @@ int main(){
     pgm_free(test1);
     pgm_free(test2);
     pgm_free(test3);
+}
 
+void test_ex2(){
     struct ppm *ppm1=NULL;
     ppm1=ppm_read_asc("../obj/eye_s_asc.ppm");
     ppm_write_asc("../obj/test.ppm",ppm1);
 
+    struct ppm *ppm2=NULL;
+    ppm2=ppm_read_bin("../obj/eye_s_asc_bin.ppm");
+    ppm_write_bin("../obj/test_bin.ppm",ppm2);
+
+    struct ppm *ppm3=NULL;
+    ppm_negative(ppm1,&ppm3);
+    ppm_write_bin("../obj/test_negatif.ppm",ppm3);
+    ppm_extract("../obj/test_extract.ppm",ppm1,100,112,288,218);
+    ppm_write_histogram(ppm1,"../obj/test_hist.ppm");
+
+    struct pgm *test;
+
+    ppm_to_pgm(ppm1,&test);
+    pgm_write_bin("../obj/test_conversion.pgm",test);
+
     ppm_free(ppm1);
+    ppm_free(ppm2);
+    ppm_free(ppm3);
+    pgm_free(test);
+}
+
+void test_ex3(){
+
+}
+
+int main(){
+    test_ex1();
+    test_ex2();
+    test_ex3();
+    
+
+    
 
     return 0;
 }
