@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+
+#define M_PI 3.141592653589793
 
 struct pgm{
     int height,width,max_value;
@@ -183,7 +186,19 @@ void ppm_to_pgm(struct ppm *in,struct pgm **out);
     convertira l’image ppm en image pgm.
 */
 
+void pgm_extract_blk(struct pgm *inpgm,double blk[8][8],int i,int j);
+/*
+    pgm_extract_blk(pgm_t *inpgm, double blk[8][8], int i, int j) 
+    qui extrait le bloc 8 × 8 formé de la composante Y de l’image ppm 
+    pointée par image dont le coin supérieur gauche se trouve aux 
+    coordonnées (i,j). Ce bloc sera sauvegardé dans le tableau de double
+    bloc passé en paramètre.
+*/
 
-
+void pgm_dct(double bloc[8][8]);
+/*
+   qui applique la transformée en cosinue discrète bi-dimensionnelle 
+   à un tableau bloc de taille 8 × 8. 
+*/
 
 #endif //TD1_H

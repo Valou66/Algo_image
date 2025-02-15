@@ -1,6 +1,7 @@
 CC=gcc
 EXEC=td1
-CFLAGS=-Wall
+CFLAGS=-Wall -lm
+OBJ=../obj/
 
 all : TD1.o FunctionTD1.o
 	${CC} ${CFLAGS} -o ${EXEC} TD1.o FunctionTD1.o
@@ -9,3 +10,5 @@ all : TD1.o FunctionTD1.o
 
 clean :
 	rm -f *~ *.o ${EXEC}
+	rm -f ${OBJ}test*
+	rm -f ${OBJ}histogram*

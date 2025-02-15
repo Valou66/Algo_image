@@ -461,3 +461,15 @@ void ppm_to_pgm(struct ppm *in,struct pgm **out){
         }
     }
 }
+
+void pgm_extract_blk(struct pgm *inpgm,double blk[8][8],int i,int j){
+    for(short x = 0;x<8;x++){
+        for(short y = 0;y<8;y++){
+            blk[x][y]=inpgm->pixels[i+x][j+y];
+        }
+    }
+}
+
+void pgm_dct(double bloc[8][8]){
+
+}

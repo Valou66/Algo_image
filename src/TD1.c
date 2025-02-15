@@ -47,7 +47,23 @@ void test_ex2(){
 }
 
 void test_ex3(){
+    struct pgm *test1=NULL;
+    test1=pgm_read_asc("../obj/eye_s_asc.pgm");
 
+    double res_blk[8][8];
+
+    pgm_extract_blk(test1,res_blk,0,0);
+
+    for(short i = 0;i<8;i++){
+        for(short j = 0;j<8;j++){
+            printf("%lf ",res_blk[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("%lf",M_PI);
+
+    pgm_free(test1);
 }
 
 int main(){
