@@ -9,14 +9,7 @@ double exemple_cour[8][8]={{139.0,144.0,149.0,153.0,155.0,155.0,155.0,155.0},
                            {162.0,162.0,161.0,163.0,162.0,157.0,157.0,157.0},
                            {162.0,162.0,161.0,161.0,163.0,158.0,158.0,158.0}};
 
-double Q[8][8]={{16.0,11.0,10.0,16.0,24.0,40.0,51.0,61.0},
-                {12.0,12.0,14.0,19.0,26.0,58.0,60.0,55.0},
-                {14.0,13.0,16.0,24.0,40.0,57.0,69.0,56.0},
-                {14.0,17.0,22.0,29.0,51.0,87.0,80.0,62.0},
-                {18.0,22.0,37.0,56.0,68.0,109.0,103.0,77.0},
-                {24.0,35.0,55.0,64.0,81.0,104.0,113.0,92.0},
-                {49.0,64.0,78.0,87.0,103.0,121.0,120.0,101.0},
-                {72.0,92.0,95.0,98.0,112.0,100.0,103.0,99.0}};
+int test_rle[64]={48,0,0,0,0,48,0,0,0,48,0,0,48,0,48,0,0,0,0,0,0,0,0,48,48,48,0,0,48,0,0,0,0,0,0,0,0,0,0,0,48,65,0,0,0,0,0,0,48,50,51,52,53,0,0,0,0,0,59,60,61,0,0,0};
 
 void test_ex1(){
     struct pgm *test1=NULL;
@@ -66,14 +59,26 @@ void test_ex2(){
 
 void test_ex3(){
     struct pgm *test1=NULL;
-    double res_blk[8][8];
-    int res_zgzg[64];
-    test1=pgm_read_asc("../obj/eye_s_asc.pgm");
+    test1=pgm_read_bin("../obj/eye_s_asc_bin.pgm");
+    pgm_extract("../obj/test_intermed_extract.pgm",test1,0,0,256,256);
+    struct pgm *extract=NULL;
+    extract=pgm_read_asc("../obj/test_intermed_extract.pgm");
 
-    pgm_extract_blk(test1,res_blk,0,0);
-    pgm_dct(res_blk);
-    pgm_quantify(res_blk,Q);
-    pgm_zig_zag_extract(res_blk,res_zgzg);
+    pgm_to_jpeg(extract,"../obj/test.jpeg");
+
+    double size_pgm,size_jpeg;
+    double taux;
+
+    size_pgm=fsize("../obj/test_intermed_extract.pgm");
+    size_jpeg=fsize("../obj/test.jpeg");
+    
+    printf("size pgm:%lf\n",size_pgm);
+    printf("size jpeg:%lf\n",size_jpeg);
+    taux=size_jpeg/size_pgm;
+
+    printf("taux de compression:%lf\n",taux);
+    
+    
 
     pgm_free(test1);
 }
@@ -82,7 +87,6 @@ int main(){
     test_ex1();
     test_ex2();
     test_ex3();
-    
 
     
 

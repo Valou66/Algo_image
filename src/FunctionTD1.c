@@ -1,5 +1,15 @@
 #include "../include/TD1.h"
 
+double Q[8][8]={{16.0,11.0,10.0,16.0,24.0,40.0,51.0,61.0},
+                {12.0,12.0,14.0,19.0,26.0,58.0,60.0,55.0},
+                {14.0,13.0,16.0,24.0,40.0,57.0,69.0,56.0},
+                {14.0,17.0,22.0,29.0,51.0,87.0,80.0,62.0},
+                {18.0,22.0,37.0,56.0,68.0,109.0,103.0,77.0},
+                {24.0,35.0,55.0,64.0,81.0,104.0,113.0,92.0},
+                {49.0,64.0,78.0,87.0,103.0,121.0,120.0,101.0},
+                {72.0,92.0,95.0,98.0,112.0,100.0,103.0,99.0}};
+
+
 struct pgm* pgm_alloc(int hauteur,int largeur,int max_val){
     struct pgm *res=(struct pgm*)malloc(sizeof(struct pgm));
     res->height=hauteur;
@@ -7,12 +17,12 @@ struct pgm* pgm_alloc(int hauteur,int largeur,int max_val){
     res->max_value=max_val;
 
     res->pixels=(unsigned char**)malloc(hauteur*sizeof(unsigned char*));
-    for(int i=0;i<res->height;i++){
+    for(short i=0;i<res->height;i++){
         res->pixels[i]=(unsigned char*)malloc(largeur*sizeof(unsigned char));
     }
 
-    for(int i=0;i<res->height;i++){
-        for(int j=0;j<res->width;j++){
+    for(short i=0;i<res->height;i++){
+        for(short j=0;j<res->width;j++){
             res->pixels[i][j]=res->max_value;
         }
     }
@@ -42,7 +52,7 @@ struct ppm* ppm_alloc(int hauteur,int largeur,int max_val){
 }
 
 void pgm_free(struct pgm *img){
-    for(int i=0;i<img->height;i++){
+    for(short i=0;i<img->height;i++){
         free(img->pixels[i]);
     }
     free(img->pixels);
@@ -78,8 +88,8 @@ struct pgm* pgm_read_asc(char *fname){
         fscanf(fichier,"%d",&h);
         fscanf(fichier,"%d",&m);
         res = pgm_alloc(h,l,m); 
-        for(int i=0;i<res->height;i++){
-            for(int j=0;j<res->width;j++){
+        for(short i=0;i<res->height;i++){
+            for(short j=0;j<res->width;j++){
                 fscanf(fichier,"%d",&e);
 
                 res->pixels[i][j]=e; 
@@ -138,8 +148,8 @@ int pgm_write_asc(char *fname,struct pgm *w){
         fprintf(fichier,"%c",'\n');
         
         
-        for(int i=0;i<w->height;i++){
-            for(int j=0;j<w->width;j++){
+        for(short i=0;i<w->height;i++){
+            for(short j=0;j<w->width;j++){
                 fprintf(fichier,"%d",w->pixels[i][j]);
                 fprintf(fichier,"%c",'\n');
             }
@@ -170,8 +180,8 @@ int ppm_write_asc(char *fname,struct ppm *w){
         fprintf(fichier,"%c",'\n');
         
         
-        for(int i=0;i<w->height;i++){
-            for(int j=0;j<w->width;j++){
+        for(short i=0;i<w->height;i++){
+            for(short j=0;j<w->width;j++){
                 fprintf(fichier,"%d",w->pixels[i][j].r);
                 fprintf(fichier,"%c",'\n');
                 fprintf(fichier,"%d",w->pixels[i][j].g);
@@ -545,7 +555,7 @@ void pgm_rle(FILE *fd,int zgzg[64]){
                 fprintf(fd,"@$%d$\n",count);
             }
             else if(count >0){
-                fprintf(fd,"%d",0);
+                fprintf(fd,"%d\n",0);
             }
             count=0;
             fprintf(fd,"%d\n",zgzg[i]);
@@ -560,4 +570,48 @@ void pgm_rle(FILE *fd,int zgzg[64]){
         fprintf(fd,"@$%d$\n",count);
     else if(count >0)
         fprintf(fd,"%d\n",0);
+}
+
+void pgm_to_jpeg(struct pgm *in_pgm,char *fname){
+    FILE *fichier=fopen(fname,"w");
+    double res_blk[8][8];
+    int res_zgzg[64];
+
+    // pgm_extract_blk(test1,res_blk,0,0);
+    // pgm_dct(res_blk);
+    // pgm_quantify(res_blk,Q);
+    // pgm_zig_zag_extract(res_blk,res_zgzg);
+
+    if(fichier!=NULL){
+        fprintf(fichier,"JPEG\n");
+        fprintf(fichier,"%d %d\n",in_pgm->width,in_pgm->height);
+        for(short i = 0;i+8<=in_pgm->height;i=i+8){
+            for(short j = 0;j+8<=in_pgm->width;j=j+8){
+                pgm_extract_blk(in_pgm,res_blk,i,j);
+                pgm_dct(res_blk);
+                pgm_quantify(res_blk,Q);
+                pgm_zig_zag_extract(res_blk,res_zgzg);
+                pgm_rle(fichier,res_zgzg);
+            }
+        }
+
+
+        fclose(fichier);
+    }
+}
+
+int fsize(char *fname){
+    FILE *fichier=fopen(fname,"rb");
+    int size=0;
+    if(fichier!=NULL){
+        char e;
+        int ret;
+
+        do{
+            ret=fread(&e,sizeof(char),1,fichier);
+            size=size+ret;
+        }while(ret>0);
+        fclose(fichier);
+    }
+    return size;
 }

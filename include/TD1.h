@@ -236,4 +236,10 @@ void pgm_to_jpeg(struct pgm *in_pgm,char *fname);
     ...
 */
 
+int fsize(char *fname);
+/*
+    renvoit la taille en octets du fichier nommé par la chaine de caratère fname. 
+    On supposera que chaque caractère du fichier fname est codé sur 1 octet. 
+*/
+
 #endif //TD1_H
