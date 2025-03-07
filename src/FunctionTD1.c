@@ -552,7 +552,7 @@ void pgm_rle(FILE *fd,int zgzg[64]){
     while(i<64){
         if(zgzg[i]!=0){
             if(count>=2){
-                fprintf(fd,"@$%d$\n",count);
+                fprintf(fd,"@%d\n",count);
             }
             else if(count >0){
                 fprintf(fd,"%d\n",0);
@@ -567,7 +567,7 @@ void pgm_rle(FILE *fd,int zgzg[64]){
         i++;
     }
     if(count>=2)
-        fprintf(fd,"@$%d$\n",count);
+        fprintf(fd,"@%d\n",count);
     else if(count >0)
         fprintf(fd,"%d\n",0);
 }
@@ -576,11 +576,6 @@ void pgm_to_jpeg(struct pgm *in_pgm,char *fname){
     FILE *fichier=fopen(fname,"w");
     double res_blk[8][8];
     int res_zgzg[64];
-
-    // pgm_extract_blk(test1,res_blk,0,0);
-    // pgm_dct(res_blk);
-    // pgm_quantify(res_blk,Q);
-    // pgm_zig_zag_extract(res_blk,res_zgzg);
 
     if(fichier!=NULL){
         fprintf(fichier,"JPEG\n");

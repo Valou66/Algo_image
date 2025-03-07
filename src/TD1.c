@@ -84,10 +84,23 @@ void test_ex3(){
     pgm_free(extract);
 }
 
+void test_ex4(){
+    FILE *fichier=fopen("./obj/test.jpeg","r");
+    char e;
+    for(int i=0;i<13;i++){
+        fscanf(fichier,"%c",&e);
+        printf("%c ",e);
+    }
+
+    int el;
+    fclose(fichier);
+}
+
 int main(){
     test_ex1();
     test_ex2();
     test_ex3();
+    test_ex4();
 
     
 
