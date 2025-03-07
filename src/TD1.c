@@ -81,6 +81,7 @@ void test_ex3(){
     
 
     pgm_free(test1);
+    pgm_free(extract);
 }
 
 int main(){
