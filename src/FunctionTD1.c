@@ -9,6 +9,32 @@ double Q[8][8]={{16.0,11.0,10.0,16.0,24.0,40.0,51.0,61.0},
                 {49.0,64.0,78.0,87.0,103.0,121.0,120.0,101.0},
                 {72.0,92.0,95.0,98.0,112.0,100.0,103.0,99.0}};
 
+int zigzag_order[64][2] = {
+                    {0, 0}, {0, 1}, {1, 0}, {2, 0}, {1, 1}, {0, 2}, {0, 3}, {1, 2},
+                    {2, 1}, {3, 0}, {4, 0}, {3, 1}, {2, 2}, {1, 3}, {0, 4}, {0, 5},
+                    {1, 4}, {2, 3}, {3, 2}, {4, 1}, {5, 0}, {6, 0}, {5, 1}, {4, 2},
+                    {3, 3}, {2, 4}, {1, 5}, {0, 6}, {0, 7}, {1, 6}, {2, 5}, {3, 4},
+                    {4, 3}, {5, 2}, {6, 1}, {7, 0}, {7, 1}, {6, 2}, {5, 3}, {4, 4},
+                    {3, 5}, {2, 6}, {1, 7}, {2, 7}, {3, 6}, {4, 5}, {5, 4}, {6, 3},
+                    {7, 2}, {7, 3}, {6, 4}, {5, 5}, {4, 6}, {3, 7}, {4, 7}, {5, 6},
+                    {6, 5}, {7, 4}, {7, 5}, {6, 6}, {5, 7}, {6, 7}, {7, 6}, {7, 7}
+                          };
+
+yuv_t rgb_to_yuv(rgb_t in){
+    yuv_t out;
+    out.y=0.299*in.r+0.587*in.g+0.114*in.b;
+    out.u=-0.147*in.r-0.289*in.g+ 0.436*in.b;
+    out.v=0.615*in.r-0.515*in.g-0.100*in.b;
+    return out;
+}
+
+rgb_t yuv_to_rgb(yuv_t in) {
+    rgb_t out;
+    out.r = (short)(in.y + 1.140 * in.v);
+    out.g = (short)(in.y - 0.395 * in.u - 0.581 * in.v);
+    out.b = (short)(in.y + 2.032 * in.u);
+    return out;
+}
 
 struct pgm* pgm_alloc(int hauteur,int largeur,int max_val){
     struct pgm *res=(struct pgm*)malloc(sizeof(struct pgm));
@@ -480,6 +506,44 @@ void pgm_extract_blk(struct pgm *inpgm,double blk[8][8],int i,int j){
     }
 }
 
+void pgm_extrect_blk_reverse(struct pgm *inpgm,double blk[8][8],int i,int j){
+    for(short x = 0;x<8;x++){
+        for(short y = 0;y<8;y++){
+            inpgm->pixels[i+x][j+y]=blk[x][y];
+        }
+    }
+}
+
+void ppm_extract_blk(struct ppm *inppm,double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int i,int j){
+    yuv_t e;
+    for(short x = 0;x<8;x++){
+        for(short y = 0;y<8;y++){
+            e=rgb_to_yuv(inppm->pixels[i+x][j+y]);
+            blk_y[x][y]=e.y;
+            blk_u[x][y]=e.u;
+            blk_v[x][y]=e.v;
+        }
+    }
+}
+
+void ppm_extract_blk_reverse(struct ppm *inppm,double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int i,int j){
+    rgb_t e_rgb;
+    yuv_t e_yuv;
+    for(short x = 0;x<8;x++){
+        for(short y = 0;y<8;y++){
+            e_yuv.y=blk_y[i][j];
+            e_yuv.u=blk_u[i][j];
+            e_yuv.v=blk_v[i][j];
+            e_rgb=yuv_to_rgb(e_yuv);
+
+            inppm->pixels[i+x][j+y].r=e_rgb.r;
+            inppm->pixels[i+x][j+y].g=e_rgb.g;
+            inppm->pixels[i+x][j+y].b=e_rgb.b;
+
+        }
+    }
+}
+
 void pgm_dct(double bloc[8][8]){
     double copie[8][8];
     short i,j,x,y;
@@ -518,6 +582,142 @@ void pgm_dct(double bloc[8][8]){
     }
 }
 
+void ppm_dct(double bloc_y[8][8],double bloc_u[8][8],double bloc_v[8][8]){
+    double copie_y[8][8];
+    double copie_u[8][8];
+    double copie_v[8][8];
+    short i,j,x,y;
+
+    double c_i,c_j;
+
+    double somme_y;
+    double somme_u;
+    double somme_v;
+
+    for(i=0;i<8;i++){
+        for(j=0;j<8;j++){
+            copie_y[i][j]=bloc_y[i][j];
+            copie_u[i][j]=bloc_u[i][j];
+            copie_v[i][j]=bloc_v[i][j];
+        }
+    }
+
+    for(i=0;i<8;i++){
+        if(i==0)
+            c_i=1.0/sqrtf(2);
+        else
+            c_i=1.0;
+
+        for(j=0;j<8;j++){
+            somme_y = 0.0;
+            somme_u = 0.0;
+            somme_v = 0.0;
+            if(j==0)
+                c_j=1.0/sqrtf(2);
+            else
+                c_j=1.0;
+            
+            for(x=0;x<8;x++){
+                for(y=0;y<8;y++){
+                    somme_y=somme_y+(copie_y[x][y]*cos((((2.0*x)+1.0)*i*M_PI)/16.0)*cos((((2.0*y)+1.0)*j*M_PI)/16.0));
+                    somme_u=somme_u+(copie_u[x][y]*cos((((2.0*x)+1.0)*i*M_PI)/16.0)*cos((((2.0*y)+1.0)*j*M_PI)/16.0));
+                    somme_v=somme_v+(copie_v[x][y]*cos((((2.0*x)+1.0)*i*M_PI)/16.0)*cos((((2.0*y)+1.0)*j*M_PI)/16.0));
+                }
+            }
+            somme_y=somme_y*c_i*c_j*(2.0/8.0);
+            somme_u=somme_u*c_i*c_j*(2.0/8.0);
+            somme_v=somme_v*c_i*c_j*(2.0/8.0);
+            bloc_y[i][j]=somme_y;
+            bloc_u[i][j]=somme_u;
+            bloc_v[i][j]=somme_v;
+        }
+    }
+}
+
+void pgm_idct(double bloc[8][8]){
+    double copie[8][8];
+    short x, y, i, j;
+    double c_i, c_j, somme;
+
+    // Sauvegarde du bloc transformé
+    for (x = 0; x < 8; x++) {
+        for (y = 0; y < 8; y++) {
+            copie[x][y] = bloc[x][y];
+        }
+    }
+
+    // Application de l'IDCT
+    for (x = 0; x < 8; x++) {
+        for (y = 0; y < 8; y++) {
+            somme = 0.0;
+
+            for (i = 0; i < 8; i++) {
+                c_i = (i == 0) ? (1.0 / sqrt(2)) : 1.0;
+
+                for (j = 0; j < 8; j++) {
+                    c_j = (j == 0) ? (1.0 / sqrt(2)) : 1.0;
+
+                    somme += c_i * c_j * copie[i][j] *
+                             cos(((2.0 * x + 1.0) * i * M_PI) / 16.0) *
+                             cos(((2.0 * y + 1.0) * j * M_PI) / 16.0);
+                }
+            }
+
+            bloc[x][y] = somme * (2.0 / 8.0);
+        }
+    }
+}
+
+void ppm_idct(double bloc_y[8][8],double bloc_u[8][8],double bloc_v[8][8]){
+    double copie_y[8][8];
+    double copie_u[8][8];
+    double copie_v[8][8];
+    short x, y, i, j;
+    double c_i, c_j, somme_y, somme_u, somme_v;
+
+    // Sauvegarde du bloc transformé
+    for (x = 0; x < 8; x++) {
+        for (y = 0; y < 8; y++) {
+            copie_y[x][y] = bloc_y[x][y];
+            copie_u[x][y] = bloc_u[x][y];
+            copie_v[x][y] = bloc_v[x][y];
+        }
+    }
+
+    // Application de l'IDCT
+    for (x = 0; x < 8; x++) {
+        for (y = 0; y < 8; y++) {
+            somme_y = 0.0;
+            somme_u = 0.0;
+            somme_v = 0.0;
+
+            for (i = 0; i < 8; i++) {
+                c_i = (i == 0) ? (1.0 / sqrt(2)) : 1.0;
+
+                for (j = 0; j < 8; j++) {
+                    c_j = (j == 0) ? (1.0 / sqrt(2)) : 1.0;
+
+                    somme_y += c_i * c_j * copie_y[i][j] *
+                             cos(((2.0 * x + 1.0) * i * M_PI) / 16.0) *
+                             cos(((2.0 * y + 1.0) * j * M_PI) / 16.0);
+                    
+                    somme_u += c_i * c_j * copie_u[i][j] *
+                             cos(((2.0 * x + 1.0) * i * M_PI) / 16.0) *
+                             cos(((2.0 * y + 1.0) * j * M_PI) / 16.0);
+                    
+                    somme_v += c_i * c_j * copie_v[i][j] *
+                             cos(((2.0 * x + 1.0) * i * M_PI) / 16.0) *
+                             cos(((2.0 * y + 1.0) * j * M_PI) / 16.0);
+                }
+            }
+
+            bloc_y[x][y] = somme_y * (2.0 / 8.0);
+            bloc_u[x][y] = somme_u * (2.0 / 8.0);
+            bloc_v[x][y] = somme_v * (2.0 / 8.0);
+        }
+    }
+}
+
 void pgm_quantify(double blk[8][8],double Q[8][8]){
     short i,j;
     for(i=0;i<8;i++){
@@ -527,21 +727,66 @@ void pgm_quantify(double blk[8][8],double Q[8][8]){
     }
 }
 
-void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]){
-    int zigzag_order[64][2] = {
-        {0, 0}, {0, 1}, {1, 0}, {2, 0}, {1, 1}, {0, 2}, {0, 3}, {1, 2},
-        {2, 1}, {3, 0}, {4, 0}, {3, 1}, {2, 2}, {1, 3}, {0, 4}, {0, 5},
-        {1, 4}, {2, 3}, {3, 2}, {4, 1}, {5, 0}, {6, 0}, {5, 1}, {4, 2},
-        {3, 3}, {2, 4}, {1, 5}, {0, 6}, {0, 7}, {1, 6}, {2, 5}, {3, 4},
-        {4, 3}, {5, 2}, {6, 1}, {7, 0}, {7, 1}, {6, 2}, {5, 3}, {4, 4},
-        {3, 5}, {2, 6}, {1, 7}, {2, 7}, {3, 6}, {4, 5}, {5, 4}, {6, 3},
-        {7, 2}, {7, 3}, {6, 4}, {5, 5}, {4, 6}, {3, 7}, {4, 7}, {5, 6},
-        {6, 5}, {7, 4}, {7, 5}, {6, 6}, {5, 7}, {6, 7}, {7, 6}, {7, 7}
-    };
-    short i;
+void pgm_quantify_reverse(double blk[8][8],double Q[8][8]){
+    short i,j;
+    for(i=0;i<8;i++){
+        for(j=0;j<8;j++){
+            blk[i][j]=blk[i][j]*Q[i][j];
+        }
+    }
+}
 
+void ppm_quantify(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],double Q[8][8]){
+    short i,j;
+    for(i=0;i<8;i++){
+        for(j=0;j<8;j++){
+            blk_y[i][j]=round(blk_y[i][j]/Q[i][j]);
+            blk_u[i][j]=round(blk_u[i][j]/Q[i][j]);
+            blk_v[i][j]=round(blk_v[i][j]/Q[i][j]);
+        }
+    }
+}
+
+void ppm_quantify_reverse(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],double Q[8][8]){
+    short i,j;
+    for(i=0;i<8;i++){
+        for(j=0;j<8;j++){
+            blk_y[i][j]=blk_y[i][j]*Q[i][j];
+            blk_u[i][j]=blk_u[i][j]*Q[i][j];
+            blk_v[i][j]=blk_v[i][j]*Q[i][j];
+        }
+    }
+}
+
+void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]){
+    short i;
     for(i=0;i<64;i++){
         zgzg[i]=blk[zigzag_order[i][0]][zigzag_order[i][1]];
+    }
+}
+
+void pgm_zig_zag_reverse(double blk[8][8],int zgzg[64]){
+    short i;
+    for(i=0;i<64;i++){
+        blk[zigzag_order[i][0]][zigzag_order[i][1]]=zgzg[i];
+    }
+}
+
+void ppm_zig_zag_extract(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
+    short i;
+    for(i=0;i<64;i++){
+        zgzg_y[i]=blk_y[zigzag_order[i][0]][zigzag_order[i][1]];
+        zgzg_u[i]=blk_u[zigzag_order[i][0]][zigzag_order[i][1]];
+        zgzg_v[i]=blk_v[zigzag_order[i][0]][zigzag_order[i][1]];
+    }
+}
+
+void ppm_zig_zag_reverse(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
+    short i;
+    for(i=0;i<64;i++){
+        blk_y[zigzag_order[i][0]][zigzag_order[i][1]]=zgzg_y[i];
+        blk_u[zigzag_order[i][0]][zigzag_order[i][1]]=zgzg_u[i];
+        blk_v[zigzag_order[i][0]][zigzag_order[i][1]]=zgzg_v[i];
     }
 }
 
@@ -572,6 +817,170 @@ void pgm_rle(FILE *fd,int zgzg[64]){
         fprintf(fd,"%d\n",0);
 }
 
+void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
+    short i;
+    short count;
+
+    i=0;
+    count=0;
+    while(i<64){
+        if(zgzg_y[i]!=0){
+            if(count>=2){
+                fprintf(fd,"@%d\n",count);
+            }
+            else if(count >0){
+                fprintf(fd,"%d\n",0);
+            }
+            count=0;
+            fprintf(fd,"%d\n",zgzg_y[i]);
+        }
+        else{
+            count++;
+        }
+
+        i++;
+    }
+    if(count>=2)
+        fprintf(fd,"@%d\n",count);
+    else if(count >0)
+        fprintf(fd,"%d\n",0);
+
+    i=0;
+    count=0;
+    while(i<64){
+        if(zgzg_u[i]!=0){
+            if(count>=2){
+                fprintf(fd,"@%d\n",count);
+            }
+            else if(count >0){
+                fprintf(fd,"%d\n",0);
+            }
+            count=0;
+            fprintf(fd,"%d\n",zgzg_u[i]);
+        }
+        else{
+            count++;
+        }
+
+        i++;
+    }
+    if(count>=2)
+        fprintf(fd,"@%d\n",count);
+    else if(count >0)
+        fprintf(fd,"%d\n",0);
+
+    i=0;
+    count=0;
+    while(i<64){
+        if(zgzg_v[i]!=0){
+            if(count>=2){
+                fprintf(fd,"@%d\n",count);
+            }
+            else if(count >0){
+                fprintf(fd,"%d\n",0);
+            }
+            count=0;
+            fprintf(fd,"%d\n",zgzg_v[i]);
+        }
+        else{
+            count++;
+        }
+
+        i++;
+    }
+    if(count>=2)
+        fprintf(fd,"@%d\n",count);
+    else if(count >0)
+        fprintf(fd,"%d\n",0);
+    
+}
+
+void rle_pgm(FILE *fd,int zgzg[64]){
+    short i=0;
+    char e;
+    int elem;
+    while(i<64){
+        fscanf(fd,"%c",&e);
+        if(e=='@'){
+            fscanf(fd,"%d",&elem);
+            for(int j=0;j<elem;j++){
+                zgzg[i]=0;
+                i++;
+            }
+        }
+        else{
+            fseek(fd,-1*sizeof(char),SEEK_CUR);
+            fscanf(fd,"%d",&elem);
+            zgzg[i]=elem;
+            i++;
+            fscanf(fd,"%c",&e);
+        }
+    }
+}
+
+void rle_ppm(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
+    short i=0;
+    char e;
+    int elem;
+
+    i=0;
+    while(i<64){
+        fscanf(fd,"%c",&e);
+        if(e=='@'){
+            fscanf(fd,"%d",&elem);
+            for(int j=0;j<elem;j++){
+                zgzg_y[i]=0;
+                i++;
+            }
+        }
+        else{
+            fseek(fd,-1*sizeof(char),SEEK_CUR);
+            fscanf(fd,"%d",&elem);
+            zgzg_y[i]=elem;
+            i++;
+            fscanf(fd,"%c",&e);
+        }
+    }
+
+    i=0;
+    while(i<64){
+        fscanf(fd,"%c",&e);
+        if(e=='@'){
+            fscanf(fd,"%d",&elem);
+            for(int j=0;j<elem;j++){
+                zgzg_u[i]=0;
+                i++;
+            }
+        }
+        else{
+            fseek(fd,-1*sizeof(char),SEEK_CUR);
+            fscanf(fd,"%d",&elem);
+            zgzg_u[i]=elem;
+            i++;
+            fscanf(fd,"%c",&e);
+        }
+    }
+
+    i=0;
+    while(i<64){
+        fscanf(fd,"%c",&e);
+        if(e=='@'){
+            fscanf(fd,"%d",&elem);
+            for(int j=0;j<elem;j++){
+                zgzg_v[i]=0;
+                i++;
+            }
+        }
+        else{
+            fseek(fd,-1*sizeof(char),SEEK_CUR);
+            fscanf(fd,"%d",&elem);
+            zgzg_v[i]=elem;
+            i++;
+            fscanf(fd,"%c",&e);
+        }
+    }
+}
+
 void pgm_to_jpeg(struct pgm *in_pgm,char *fname){
     FILE *fichier=fopen(fname,"w");
     double res_blk[8][8];
@@ -593,6 +1002,106 @@ void pgm_to_jpeg(struct pgm *in_pgm,char *fname){
 
         fclose(fichier);
     }
+}
+
+void jpeg_to_pgm(char *fname){
+    FILE *fichier=fopen(fname,"r");
+    double res_blk[8][8];
+    int res_zgzg[64];
+    char e;
+    for(int i=0;i<5;i++){
+        fscanf(fichier,"%c",&e);
+    }
+    int w,h;
+    fscanf(fichier,"%d %d",&w,&h);
+
+    struct pgm *write=NULL;
+
+    write=pgm_alloc(h,w,255);
+
+
+    if(fichier!=NULL){
+        for(short i = 0;i+8<=write->height;i=i+8){
+            for(short j = 0;j+8<=write->width;j=j+8){
+                rle_pgm(fichier,res_zgzg);
+                pgm_zig_zag_reverse(res_blk,res_zgzg);
+                pgm_quantify_reverse(res_blk,Q);
+                pgm_idct(res_blk);
+                pgm_extrect_blk_reverse(write,res_blk,i,j);
+            }
+        }
+        fclose(fichier);
+    }
+
+    pgm_write_asc("./obj/test_reserse_jpeg.pgm",write);
+
+    pgm_free(write);
+    
+}
+
+void ppm_to_jpeg(struct ppm *in_ppm,char *fname){
+    FILE *fichier=fopen(fname,"w");
+    double res_blk_y[8][8];
+    double res_blk_u[8][8];
+    double res_blk_v[8][8];
+    int res_zgzg_y[64];
+    int res_zgzg_u[64];
+    int res_zgzg_v[64];
+
+    if(fichier!=NULL){
+        fprintf(fichier,"JPEG\n");
+        fprintf(fichier,"%d %d\n",in_ppm->width,in_ppm->height);
+        for(short i = 0;i+8<=in_ppm->height;i=i+8){
+            for(short j = 0;j+8<=in_ppm->width;j=j+8){
+                ppm_extract_blk(in_ppm,res_blk_y,res_blk_u,res_blk_v,i,j);
+                ppm_dct(res_blk_y,res_blk_u,res_blk_v);
+                ppm_quantify(res_blk_y,res_blk_u,res_blk_v,Q);
+                ppm_zig_zag_extract(res_blk_y,res_blk_u,res_blk_v,res_zgzg_y,res_zgzg_u,res_zgzg_v);
+                ppm_rle(fichier,res_zgzg_y,res_zgzg_u,res_zgzg_v);
+            }
+        }
+
+
+        fclose(fichier);
+    }
+}
+
+void jpeg_to_ppm(char *fname){
+    FILE *fichier=fopen(fname,"r");
+    double res_blk_y[8][8];
+    double res_blk_u[8][8];
+    double res_blk_v[8][8];
+    int res_zgzg_y[64];
+    int res_zgzg_u[64];
+    int res_zgzg_v[64];
+    char e;
+    for(int i=0;i<5;i++){
+        fscanf(fichier,"%c",&e);
+    }
+    int w,h;
+    fscanf(fichier,"%d %d",&w,&h);
+
+    struct ppm *write=NULL;
+
+    write=ppm_alloc(h,w,255);
+
+
+    if(fichier!=NULL){
+        for(short i = 0;i+8<=write->height;i=i+8){
+            for(short j = 0;j+8<=write->width;j=j+8){
+                rle_ppm(fichier,res_zgzg_y,res_zgzg_u,res_zgzg_v);
+                ppm_zig_zag_reverse(res_blk_y,res_blk_u,res_blk_v,res_zgzg_y,res_zgzg_u,res_zgzg_v);
+                ppm_quantify_reverse(res_blk_y,res_blk_u,res_blk_v,Q);
+                ppm_idct(res_blk_y,res_blk_u,res_blk_v);
+                ppm_extract_blk_reverse(write,res_blk_y,res_blk_u,res_blk_v,i,j);
+            }
+        }
+        fclose(fichier);
+    }
+
+    ppm_write_asc("./obj/test_reserse_jpeg.ppm",write);
+
+    ppm_free(write);
 }
 
 int fsize(char *fname){

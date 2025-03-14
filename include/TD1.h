@@ -11,14 +11,23 @@ struct pgm{
 };
 
 struct rgb{
-    unsigned char r,g,b;
+    short r,g,b;
 };
 typedef struct rgb rgb_t;
+
+struct yuv{
+    short y,u,v;
+};
+typedef struct yuv yuv_t;
 
 struct ppm{
     int height,width,max_value;
     rgb_t **pixels;
 };
+
+yuv_t rgb_to_yuv(rgb_t in);
+
+rgb_t yuv_to_rgb(yuv_t in);
 
 struct pgm* pgm_alloc(int hauteur,int largeur,int max_val);
 /*
@@ -193,17 +202,35 @@ void pgm_extract_blk(struct pgm *inpgm,double blk[8][8],int i,int j);
     bloc passé en paramètre.
 */
 
+void pgm_extrect_blk_reverse(struct pgm *inpgm,double blk[8][8],int i,int j);
+
+void ppm_extract_blk(struct ppm *inppm,double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int i,int j);
+
+void ppm_extract_blk_reverse(struct ppm *inppm,double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int i,int j);
+
 void pgm_dct(double bloc[8][8]);
 /*
    qui applique la transformée en cosinue discrète bi-dimensionnelle 
    à un tableau bloc de taille 8 × 8. 
 */
 
+void pgm_idct(double bloc[8][8]);
+
+void ppm_dct(double bloc_y[8][8],double bloc_u[8][8],double bloc_v[8][8]);
+
+void ppm_idct(double bloc_y[8][8],double bloc_u[8][8],double bloc_v[8][8]);
+
 void pgm_quantify(double blk[8][8],double Q[8][8]);
 /*
     void pgm_quantify(double blk[8][8], double Q[8][8]) quantifie
     le bloc blk passé en paramètre avec la matrice de quantification Q passée en paramètre.
 */
+
+void pgm_quantify_reverse(double blk[8][8],double Q[8][8]);
+
+void ppm_quantify(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],double Q[8][8]);
+
+void ppm_quantify_reverse(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],double Q[8][8]);
 
 void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]);
 /*
@@ -213,6 +240,12 @@ void pgm_zig_zag_extract(double blk[8][8],int zgzg[64]);
     passé en paramètre.
 */
 
+void pgm_zig_zag_reverse(double blk[8][8],int zgzg[64]);
+
+void ppm_zig_zag_extract(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]);
+
+void ppm_zig_zag_reverse(double blk_y[8][8],double blk_u[8][8],double blk_v[8][8],int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]);
+
 void pgm_rle(FILE *fd,int zgzg[64]);
 /*
     écrit les entiers contenus dans le tableau zgzg dans le fichier pointé par fd. 
@@ -220,6 +253,13 @@ void pgm_rle(FILE *fd,int zgzg[64]);
     Chaque entier sera écrit sur une ligne différente et une séquence de n 0 sera
     codée par @$n$ dès que n >= 2.
 */
+
+void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]);
+
+
+void rle_pgm(FILE *fd,int zgzg[64]);
+
+void rle_ppm(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]);
 
 void pgm_to_jpeg(struct pgm *in_pgm,char *fname);
 /*
@@ -235,6 +275,13 @@ void pgm_to_jpeg(struct pgm *in_pgm,char *fname);
     ...
     ...
 */
+
+
+
+void ppm_to_jpeg(struct ppm *in_pgm,char *fname);
+
+void jpeg_to_pgm(char *fname);
+void jpeg_to_ppm(char *fname);
 
 int fsize(char *fname);
 /*
