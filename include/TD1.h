@@ -16,7 +16,7 @@ struct rgb{
 typedef struct rgb rgb_t;
 
 struct yuv{
-    short y,u,v;
+    double y,u,v;
 };
 typedef struct yuv yuv_t;
 

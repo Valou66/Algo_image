@@ -30,9 +30,30 @@ yuv_t rgb_to_yuv(rgb_t in){
 
 rgb_t yuv_to_rgb(yuv_t in) {
     rgb_t out;
-    out.r = (short)(in.y + 1.140 * in.v);
-    out.g = (short)(in.y - 0.395 * in.u - 0.581 * in.v);
-    out.b = (short)(in.y + 2.032 * in.u);
+    out.r = (in.y + 1.140 * in.v);
+    out.g = (in.y - 0.395 * in.u - 0.581 * in.v);
+    out.b = (in.y + 2.032 * in.u);
+
+    if(out.r >255){
+        out.r=255;
+    }
+    if(out.r<0){
+        out.r=0;
+    }
+
+    if(out.g >255){
+        out.g=255;
+    }
+    if(out.g<0){
+        out.g=0;
+    }
+
+    if(out.b >255){
+        out.b=255;
+    }
+    if(out.b<0){
+        out.b=0;
+    }
     return out;
 }
 
@@ -531,9 +552,9 @@ void ppm_extract_blk_reverse(struct ppm *inppm,double blk_y[8][8],double blk_u[8
     yuv_t e_yuv;
     for(short x = 0;x<8;x++){
         for(short y = 0;y<8;y++){
-            e_yuv.y=blk_y[i][j];
-            e_yuv.u=blk_u[i][j];
-            e_yuv.v=blk_v[i][j];
+            e_yuv.y=blk_y[x][y];
+            e_yuv.u=blk_u[x][y];
+            e_yuv.v=blk_v[x][y];
             e_rgb=yuv_to_rgb(e_yuv);
 
             inppm->pixels[i+x][j+y].r=e_rgb.r;
@@ -1084,6 +1105,8 @@ void jpeg_to_ppm(char *fname){
     struct ppm *write=NULL;
 
     write=ppm_alloc(h,w,255);
+
+    printf("%d %d \n",write->height,write->width);
 
 
     if(fichier!=NULL){
