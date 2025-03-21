@@ -3,7 +3,9 @@
 
 #include "TD1.h"
 #define N 1
-
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 
 double B0(double x);
@@ -16,4 +18,6 @@ rgb_t interpolation_ppm(struct ppm *image,double x,double y);
 struct pgm* rotation_pgm(struct pgm *image,double theta,int x0,int y0);
 struct ppm* rotation_ppm(struct ppm *image,double theta,int x0,int y0);
 
+struct ppm* zoom_ppm(struct ppm *image,double lambda,int x0,int y0,int Dx,int Dy);
+struct ppm* shear_ppm(struct ppm *image,double cx,double cy,int Dx,int Dy);
 #endif //TD2_H

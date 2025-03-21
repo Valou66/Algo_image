@@ -70,7 +70,7 @@ unsigned char interpolation_pgm(struct pgm *image,double x,double y){
             somme+=B[N](x-i)*B[N](y-j)*image->pixels[i][j];
         }
     }
-    return somme;
+    return (unsigned char)somme;
 }
 
 rgb_t interpolation_ppm(struct ppm *image,double x,double y){
@@ -92,14 +92,60 @@ rgb_t interpolation_ppm(struct ppm *image,double x,double y){
 }
 
 struct pgm* rotation_pgm(struct pgm *image,double theta,int x0,int y0){
-    double theta_radian=theta*(M_PI/100);
+    
+    double theta_radian=theta*(M_PI/180);
     struct pgm *res= pgm_alloc(image->height,image->width,image->max_value);
-    for(int y=0;y<image->height;y++){
-        for(int x=0;x<image->width;x++){
-            double xp = x0+((x-x0)*cos(theta_radian))-((y-y0)*sin(theta_radian));
-            double yp = y0+((x-x0)*sin(theta_radian))+((y-y0)*cos(theta_radian));
+    for(int y=0;y<res->height;y++){
+        printf("%d\n",y);
+        for(int x=0;x<res->width;x++){
+            
+            double xp = x0+((x-x0)*cos(theta_radian))-(y-y0)*sin(theta_radian);
+            double yp = y0+(x-x0)*sin(theta_radian)+(y-y0)*cos(theta_radian);
 
-            res->pixels[y][x]=interpolation_pgm(res,xp,yp);
+            res->pixels[x][y]=interpolation_pgm(image,xp,yp);
         }
     }
+    return res;
+}
+
+struct ppm* rotation_ppm(struct ppm *image,double theta,int x0,int y0){
+    double theta_radian=theta*(M_PI/180);
+    struct ppm *res= ppm_alloc(image->height,image->width,image->max_value);
+    for(int y=0;y<res->height;y++){
+        printf("%d\n",y);
+        for(int x=0;x<res->width;x++){
+            
+            double xp = x0+(x-x0)*cos(theta_radian)-(y-y0)*sin(theta_radian);
+            double yp = y0+(x-x0)*sin(theta_radian)+(y-y0)*cos(theta_radian);
+
+            res->pixels[x][y]=interpolation_ppm(image,xp,yp);
+        }
+    }
+    return res;
+}
+
+struct ppm* zoom_ppm(struct ppm *image,double lambda,int x0,int y0,int Dx,int Dy){
+    struct ppm *res=ppm_alloc(Dy,Dx,image->max_value);
+    double xp,yp;
+    for(int i=0;i<Dx;i++){
+        printf("%d\n",i);
+        for(int j=0;j<Dy;j++){
+            xp=x0+(j-x0)/lambda;
+            yp=y0+(i-y0)/lambda;
+            res->pixels[j][i]=interpolation_ppm(image,xp,yp);
+        }
+    }
+    return res;
+}
+struct ppm* shear_ppm(struct ppm *image,double cx,double cy,int Dx,int Dy){
+    struct ppm *res=ppm_alloc(Dy,Dx,image->max_value);
+    double xp,yp;
+    for(int y=0;y<Dy;y++){
+        for(int x=0;x<Dx;x++){
+            xp=x+cx*y;
+            yp=y+cy*x;
+            res->pixels[x][y]=interpolation_ppm(image,xp,yp);
+        }
+    }
+    return res;
 }
