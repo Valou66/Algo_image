@@ -138,12 +138,13 @@ struct ppm* zoom_ppm(struct ppm *image,double lambda,int x0,int y0,int Dx,int Dy
     return res;
 }
 struct ppm* shear_ppm(struct ppm *image,double cx,double cy,int Dx,int Dy){
-    struct ppm *res=ppm_alloc(Dy,Dx,image->max_value);
+    struct ppm *res=ppm_alloc(Dx,Dy,image->max_value);
     double xp,yp;
-    for(int y=0;y<Dy;y++){
-        for(int x=0;x<Dx;x++){
-            xp=x+cx*y;
-            yp=y+cy*x;
+    for(int x=0;x<Dx;x++){
+        printf("%d\n",x);
+        for(int y=0;y<Dy;y++){
+            xp=x-cy*y;
+            yp=y-cx*x;
             res->pixels[x][y]=interpolation_ppm(image,xp,yp);
         }
     }

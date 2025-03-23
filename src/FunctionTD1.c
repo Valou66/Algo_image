@@ -849,8 +849,8 @@ void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
             if(count>=2){
                 fprintf(fd,"@%d\n",count);
             }
-            else if(count >0){
-                fprintf(fd,"%d\n",0);
+            else if(count == 1){
+                fprintf(fd,"0\n");
             }
             count=0;
             fprintf(fd,"%d\n",zgzg_y[i]);
@@ -863,7 +863,7 @@ void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
     }
     if(count>=2)
         fprintf(fd,"@%d\n",count);
-    else if(count >0)
+    else if(count == 1)
         fprintf(fd,"%d\n",0);
 
     i=0;
@@ -873,7 +873,7 @@ void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
             if(count>=2){
                 fprintf(fd,"@%d\n",count);
             }
-            else if(count >0){
+            else if(count == 1){
                 fprintf(fd,"%d\n",0);
             }
             count=0;
@@ -887,7 +887,7 @@ void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
     }
     if(count>=2)
         fprintf(fd,"@%d\n",count);
-    else if(count >0)
+    else if(count == 1)
         fprintf(fd,"%d\n",0);
 
     i=0;
@@ -897,7 +897,7 @@ void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
             if(count>=2){
                 fprintf(fd,"@%d\n",count);
             }
-            else if(count >0){
+            else if(count == 1){
                 fprintf(fd,"%d\n",0);
             }
             count=0;
@@ -911,7 +911,7 @@ void ppm_rle(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
     }
     if(count>=2)
         fprintf(fd,"@%d\n",count);
-    else if(count >0)
+    else if(count == 1)
         fprintf(fd,"%d\n",0);
     
 }
@@ -953,6 +953,7 @@ void rle_ppm(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
                 zgzg_y[i]=0;
                 i++;
             }
+            fscanf(fd,"%c",&e);
         }
         else{
             fseek(fd,-1*sizeof(char),SEEK_CUR);
@@ -972,6 +973,7 @@ void rle_ppm(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
                 zgzg_u[i]=0;
                 i++;
             }
+            fscanf(fd,"%c",&e);
         }
         else{
             fseek(fd,-1*sizeof(char),SEEK_CUR);
@@ -991,6 +993,7 @@ void rle_ppm(FILE *fd,int zgzg_y[64],int zgzg_u[64],int zgzg_v[64]){
                 zgzg_v[i]=0;
                 i++;
             }
+            fscanf(fd,"%c",&e);
         }
         else{
             fseek(fd,-1*sizeof(char),SEEK_CUR);
@@ -1105,8 +1108,6 @@ void jpeg_to_ppm(char *fname){
     struct ppm *write=NULL;
 
     write=ppm_alloc(h,w,255);
-
-    printf("%d %d \n",write->height,write->width);
 
 
     if(fichier!=NULL){

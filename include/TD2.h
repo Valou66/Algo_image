@@ -7,7 +7,10 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-
+struct point{
+    int x,y;
+};
+typedef struct point point_t;
 double B0(double x);
 double B1(double x);
 double B2(double x);

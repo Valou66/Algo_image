@@ -82,10 +82,10 @@ void test_ex3(){
     size_jpeg=fsize("./obj/test.jpeg");
     
     printf("size pgm:%lf\n",size_pgm);
-    printf("size jpeg:%lf\n",size_jpeg);
+    printf("size pgm_jpeg:%lf\n",size_jpeg);
     taux=100.0*(1.0-(size_jpeg/size_pgm));
 
-    printf("taux de compression:%lf%\n",taux);
+    printf("taux de compression pgm:%lf%\n",taux);
     
     
 
@@ -104,92 +104,26 @@ void test_ex5(){
     struct ppm *extract=NULL;
     extract=ppm_read_asc("./obj/test_intermed_extract.ppm");
     ppm_to_jpeg(extract,"./obj/test_ppm.jpeg");
+
+    double size_ppm,size_jpeg;
+    double taux;
+
+    size_ppm=fsize("./obj/test_intermed_extract.ppm");
+    size_jpeg=fsize("./obj/test_ppm.jpeg");
+    printf("size ppm:%lf\n",size_ppm);
+    printf("size ppm_jpeg:%lf\n",size_jpeg);
+    taux=100.0*(1.0-(size_jpeg/size_ppm));
+
+    printf("taux de compression ppm:%lf%\n",taux);
+
+    ppm_free(test1);
+    ppm_free(extract);
 }
 
 void test_ex6(){
-    double G[8][8]={{16.0,11.0,10.0,16.0,24.0,40.0,51.0,61.0},
-                {12.0,12.0,14.0,19.0,26.0,58.0,60.0,55.0},
-                {14.0,13.0,16.0,24.0,40.0,57.0,69.0,56.0},
-                {14.0,17.0,22.0,29.0,51.0,87.0,80.0,62.0},
-                {18.0,22.0,37.0,56.0,68.0,109.0,103.0,77.0},
-                {24.0,35.0,55.0,64.0,81.0,104.0,113.0,92.0},
-                {49.0,64.0,78.0,87.0,103.0,121.0,120.0,101.0},
-                {72.0,92.0,95.0,98.0,112.0,100.0,103.0,99.0}};
-    struct ppm *test1=NULL;
-    test1=ppm_read_bin("./obj/eye_s_asc_bin.ppm");
-    ppm_extract("./obj/test_intermed_extract.ppm",test1,0,0,256,256);
-    struct ppm *extract=NULL;
-    extract=ppm_read_asc("./obj/test_intermed_extract.ppm");
-
-    double res_blk_y[8][8];
-    double res_blk_u[8][8];
-    double res_blk_v[8][8];
-    int res_zgzg_y[64];
-    int res_zgzg_u[64];
-    int res_zgzg_v[64];
-
-    int dim=256-(8);
-    for(int i=dim;i<dim+8;i++){
-        for(int j=dim;j<dim+8;j++)
-            printf("%d ",extract->pixels[i][j].r);
-
-        printf(" ");
-
-        for(int j=dim;j<dim+8;j++)
-            printf("%d ",extract->pixels[i][j].g);
-        
-            printf(" ");
-        
-        for(int j=dim;j<dim+8;j++)
-            printf("%d ",extract->pixels[i][j].b);
-
-        printf(" ");
-
-        printf("\n");
-    }
-
-    
-    printf("\n");
-    ppm_extract_blk(extract,res_blk_y,res_blk_u,res_blk_v,dim,dim);
-    ppm_dct(res_blk_y,res_blk_u,res_blk_v);
-    ppm_quantify(res_blk_y,res_blk_u,res_blk_v,G);
-    ppm_zig_zag_extract(res_blk_y,res_blk_y,res_blk_v,res_zgzg_y,res_zgzg_u,res_zgzg_v);
-    
-    FILE *fichier =fopen("test.txt","w");
-    ppm_rle(fichier,res_zgzg_y,res_zgzg_u,res_zgzg_v);
-    fclose(fichier);
-
-    fichier =fopen("test.txt","r");
-    rle_ppm(fichier,res_zgzg_y,res_zgzg_u,res_zgzg_v);
-    fclose(fichier);
-    
-    ppm_zig_zag_reverse(res_blk_y,res_blk_y,res_blk_v,res_zgzg_y,res_zgzg_u,res_zgzg_v);
-    ppm_quantify_reverse(res_blk_y,res_blk_u,res_blk_v,G);
-    ppm_idct(res_blk_y,res_blk_u,res_blk_v);
-    ppm_extract_blk_reverse(extract,res_blk_y,res_blk_u,res_blk_v,dim,dim);
-    for(int i=dim;i<dim+8;i++){
-        for(int j=dim;j<dim+8;j++)
-            printf("%d ",extract->pixels[i][j].r);
-
-        printf(" ");
-
-        for(int j=dim;j<dim+8;j++)
-            printf("%d ",extract->pixels[i][j].g);
-        
-        printf(" ");
-
-        for(int j=dim;j<dim+8;j++)
-            printf("%d ",extract->pixels[i][j].b);
-
-        printf(" ");
-
-        printf("\n");
-    }
-    ppm_write_asc("HHHAAAAAA.ppm",extract);
-}
-
-void test_ex6b(){
     jpeg_to_ppm("./obj/test_ppm.jpeg");
+    
+
 }
 
 int main(){
@@ -199,7 +133,6 @@ int main(){
     test_ex4();
     test_ex5();
     test_ex6();
-    test_ex6b();
     
 
     return 0;

@@ -57,11 +57,21 @@ void td2_ex1_5_1(){
 }
 
 void td2_ex1_5_2(){
-    
+    int dim=256;
+    struct ppm *testppm=ppm_read_asc("./obj/eye_s_asc.ppm");
+    ppm_extract("./obj/test_extract.ppm",testppm,0,0,dim,dim);
+    ppm_free(testppm);
+
+    testppm=ppm_read_asc("./obj/test_extract.ppm");
+    struct ppm *res2=shear_ppm(testppm,0.4,0.0,384,384);
+
+    ppm_write_asc("./obj/test_sheer2.ppm",res2);
+    ppm_free(testppm);
+    ppm_free(res2);
 }
 
 
 int main(){
-    td2_ex1_5_1();
+    td2_ex1_5_2();
     return 0;
 }
