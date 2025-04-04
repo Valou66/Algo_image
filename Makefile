@@ -1,7 +1,7 @@
 CC=gcc
 TD1=td1
 TD2=td2
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 LDFLAGS=-lm
 SRC=./src/
 OBJ=./obj/
