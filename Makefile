@@ -9,11 +9,11 @@ INC=./include/
 
 
 
-TD1 : ${SRC}TD1.o ${SRC}FunctionTD1.o
+td1 : ${SRC}TD1.o ${SRC}FunctionTD1.o
 	${CC} ${CFLAGS} -o ${TD1} ${SRC}TD1.o ${SRC}FunctionTD1.o ${LDFLAGS}
 	./${TD1}
 
-TD2 : ${SRC}TD2.o ${SRC}FunctionTD1.o ${SRC}FunctionTD2.o ${INC}TD2.h
+td2 : ${SRC}TD2.o ${SRC}FunctionTD1.o ${SRC}FunctionTD2.o ${INC}TD2.h
 	${CC} ${CFLAGS} -o ${TD2} ${SRC}TD2.o ${SRC}FunctionTD1.o ${SRC}FunctionTD2.o ${LDFLAGS}
 	./${TD2}
 
