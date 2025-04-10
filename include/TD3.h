@@ -6,6 +6,8 @@
 #define M_PI 3.14159265358979323846264338327950288419716939937510
 #endif
 
+int apply_kernel(struct pgm *image ,int x,int y,double k[3][3]);
+
 unsigned char max_pgm(struct pgm *image);
 
 struct pgm *naive_x(struct pgm *image);

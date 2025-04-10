@@ -2,6 +2,10 @@
 
 char *pgm_asc="./obj/eye_s_asc.pgm";
 
+double kv[3][3]={{0,-1,0},
+                 {0,1,0},
+                 {0,0,0}};
+
 void td3_ex1_1(){
     struct pgm *testpgm=pgm_read_asc(pgm_asc);
     unsigned char res=max_pgm(testpgm);
@@ -31,6 +35,10 @@ void td3_ex1_3(){
     pgm_write_asc("./obj/test_naive.pgm",res);
     pgm_free(testpgm);
     pgm_free(res);
+}
+
+void test_apply_kernel(){
+    //int res=apply_kernel(image)
 }
 
 int main(){

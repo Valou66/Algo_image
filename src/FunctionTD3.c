@@ -19,6 +19,17 @@ unsigned char max_pgm(struct pgm *image){
     return maxi;
 }
 
+int apply_kernel(struct pgm *image ,int x,int y,double k[3][3]){
+    int somme=0;
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(x+i-1 >= 0 && x+i-1<image->height && y+j-1 >= 0 && y+j-1<image->width)
+            somme=somme+(int)image->pixels[x+i-1][y+j-1]*k[i][j];
+        }
+    }
+    return somme;
+}
+
 struct pgm *naive_x(struct pgm *image){
     struct pgm *res=pgm_alloc(image->height,image->width,image->max_value);
 
@@ -78,5 +89,9 @@ struct pgm *naive_edge_detector(struct pgm *image){
     pgm_free(naivey);
 
     return res;
+
+}
+
+struct pgm *sobel_edge_detector(struct pgm*image){
 
 }
