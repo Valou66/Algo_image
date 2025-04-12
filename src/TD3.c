@@ -2,8 +2,8 @@
 
 char *pgm_asc="./obj/eye_s_asc.pgm";
 
-double kv[3][3]={{0,-1,0},
-                 {0,1,0},
+double kv[3][3]={{0,0,0},
+                 {-1,1,0},
                  {0,0,0}};
 
 void td3_ex1_1(){
@@ -38,14 +38,80 @@ void td3_ex1_3(){
 }
 
 void test_apply_kernel(){
-    //int res=apply_kernel(image)
+    struct pgm *test=pgm_alloc(4,4,255);
+    test->pixels[0][0]=180;
+    test->pixels[0][1]=18;
+    test->pixels[0][2]=129;
+    test->pixels[0][3]=132;
+
+    test->pixels[1][0]=132;
+    test->pixels[1][1]=19;
+    test->pixels[1][2]=140;
+    test->pixels[1][3]=134;
+
+    test->pixels[2][0]=243;
+    test->pixels[2][1]=243;
+    test->pixels[2][2]=245;
+    test->pixels[2][3]=253;
+
+    test->pixels[3][0]=138;
+    test->pixels[3][1]=135;
+    test->pixels[3][2]=136;
+    test->pixels[3][3]=136;
+
+    struct pgm *res=copypgm(test);
+
+    for(int i=0;i<4;i++){
+        for(int j=0;j<4;j++){
+            res->pixels[i][j]=apply_kernel(test,i,j,kv);
+        }
+    }
+
+    pgm_write_asc("./obj/test_conv.pgm",res);
+
+    pgm_free(test);
+    pgm_free(res);
+
+
+}
+
+void td3_ex1_4(){
+    struct pgm *testpgm=pgm_read_asc(pgm_asc);
+
+    struct pgm *res=sobel_edge_detector(testpgm);
+
+    pgm_write_asc("./obj/test_sobel.pgm",res);
+    pgm_free(testpgm);
+    pgm_free(res);
+}
+
+void test_pile(){
+    Pile *p=NULL;
+    show_pile(p);
+    for(int i=0;i<10;i++){
+        p=empiler(p,cos(exp(2*M_PI*i)));
+    }
+    show_pile(p);
+}
+
+void td3_ex2_1(){
+    struct pgm *testpgm=pgm_read_asc(pgm_asc);
+
+    gaussian_blur(testpgm,1.0,5);
+
+    pgm_write_asc("./obj/test_gaussian_blur.pgm",testpgm);
+    pgm_free(testpgm);
 }
 
 int main(){
     td3_ex1_1();
     td3_ex1_2();
     td3_ex1_3();
+    test_apply_kernel();
+    td3_ex1_4();
+    td3_ex2_1();
 
+    test_pile();
 
 
 

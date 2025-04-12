@@ -6,7 +6,21 @@
 #define M_PI 3.14159265358979323846264338327950288419716939937510
 #endif
 
+typedef struct Pile{
+    double x;
+    struct Pile *next;
+}Pile;
+
+Pile* empiler(Pile *s,double x);
+Pile* depiler(Pile *s,double *x);
+Pile* pile_vide(Pile *s);
+void show_pile(Pile *s);
+
+struct pgm* copypgm(struct pgm *image);
+
 int apply_kernel(struct pgm *image ,int x,int y,double k[3][3]);
+
+int apply_kernelall(struct pgm *image ,int x,int y,double **k,int n);
 
 unsigned char max_pgm(struct pgm *image);
 

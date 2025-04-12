@@ -8,7 +8,10 @@ SRC=./src/
 OBJ=./obj/
 INC=./include/
 
-
+all :
+	make td1
+	make td2
+	make td3
 
 td1 : ${SRC}TD1.o ${SRC}FunctionTD1.o
 	${CC} ${CFLAGS} -o ${TD1} ${SRC}TD1.o ${SRC}FunctionTD1.o ${LDFLAGS}
@@ -31,3 +34,4 @@ clean_all :
 	rm -f ${SRC}*.o ${TD1} ${TD2}
 	rm -f ${OBJ}test*
 	rm -f ${OBJ}histogram*
+	rm -f ${OBJ}extract.pgm
