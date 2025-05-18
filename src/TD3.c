@@ -85,11 +85,11 @@ void td3_ex1_4(){
     pgm_free(res);
 }
 
-void test_pile(){
+void test_pile(int seed1,int seed2){
     Pile *p=NULL;
     show_pile(p);
     for(int i=0;i<10;i++){
-        p=empiler(p,cos(exp(2*M_PI*i)));
+        p=empiler(p,(seed1%100)*cos(exp(2*M_PI*i)),(seed2%100)*cos(exp(2*M_PI*i)));
     }
     show_pile(p);
 }
@@ -97,21 +97,37 @@ void test_pile(){
 void td3_ex2_1(){
     struct pgm *testpgm=pgm_read_asc(pgm_asc);
 
-    gaussian_blur(testpgm,1.0,5);
+    gaussian_blur(testpgm,0.6,5);
 
     pgm_write_asc("./obj/test_gaussian_blur.pgm",testpgm);
     pgm_free(testpgm);
 }
 
+
+
 int main(){
-    td3_ex1_1();
-    td3_ex1_2();
-    td3_ex1_3();
-    test_apply_kernel();
     td3_ex1_4();
     td3_ex2_1();
 
-    test_pile();
+    struct pgm *test=pgm_read_asc(pgm_asc);
+    struct pgm *sobelx=sobel_x(test);
+    struct pgm *sobely=sobel_y(test);
+    double **angleres=gradiant_angle(sobelx,sobely);
+
+    //gaussian_blur(test,0.6,5);
+
+    struct pgm *sobel=sobel_edge_detector(test);
+
+    pgm_write_asc("./obj/test_sobel.pgm",sobel);
+
+    non_maxima_supression(sobel,angleres);
+
+    pgm_write_asc("./obj/test_nonmaxima.pgm",sobel);
+
+    hysteresis_thresholding(sobel,0.4,0.2);
+
+    pgm_write_asc("./obj/test_hysteresis.pgm",sobel);
+
 
 
 
