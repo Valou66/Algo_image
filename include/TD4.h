@@ -22,4 +22,9 @@ double_rgb average_pixels_ppm(struct ppm *image);
 double std_dev_pgm(struct pgm *image,double average);
 double_rgb std_dev_ppm(struct ppm *image,double_rgb average);
 
+unsigned char NCC_pgm(struct pgm* image, struct pgm* pattern, int x, int y, double average_pattern, double std_dev_pattern);
+unsigned char NCC_ppm(struct ppm* image, struct ppm* pattern, int x, int y,double_rgb average_pattern, double_rgb std_dev_pattern);
+
+struct pgm* compute_NCC(struct pgm* image, struct pgm* pattern);
+
 #endif //TD4_H
